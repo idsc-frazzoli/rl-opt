@@ -6,11 +6,22 @@ import pandas as pd
 import os
 
 
-# import data from csv as np.array
-def getData():
+
+def getDataFromCSV():
+    """
+    Retrieves the input data from the csv files.
+    """
     file_name = "inputData3D.csv"
     df = pd.read_csv(file_name)
     return df.values
+
+
+def createRandomPoints(num):
+    """
+    Generates num random datapoints between 0 and 20
+    """
+    datavalues = np.random.rand(num,3)
+    return datavalues*20
 
 
 def getRetainerSet(set):
@@ -82,7 +93,10 @@ def update_graph(num):
 
 
 # set up data and slack vector
-dataset = getData()
+#dataset = getDataFromCSV()
+#num = len(dataset)
+num = 100
+dataset = createRandomPoints(num)
 slack = np.array([2, 2, 2])  # slack variable to set by decision maker
 data = dataset[0:1]
 feasibleSet, discardedSet = getRetainerSet(data)
@@ -99,18 +113,18 @@ ax.set_ylabel('Y')
 ax.set_zlim3d([0.0, 20.0])
 ax.set_zlabel('Z')
 
-graph1 = ax.scatter(data[:, 0], data[:, 1], data[:, 2], marker=".", zorder=1, label='Input Elements')
-graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], marker=".", zorder=2, label='Retained Elements')
-graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], marker=".", zorder=3, label='Minimal Elements')
+graph1 = ax.scatter(data[:, 0], data[:, 1], data[:, 2], c="gray", marker=".", zorder=1, label='Discarded Elements')
+graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], c="blue", marker=".", zorder=2, label='Candidate Elements')
+graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], c="red", marker=".", zorder=3, label='Minimal Elements')
 
-ani = matplotlib.animation.FuncAnimation(fig, update_graph, 19, interval=500, blit=False)
+ani = matplotlib.animation.FuncAnimation(fig, update_graph, num, interval=500, blit=False)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
           fancybox=True, ncol=3)
 plt.tight_layout(pad=2)
 
 
 file_path = os.getcwd() + "/3Dplots/"
-ani.save(file_path + 'animation.gif', writer='imagemagick', fps=60)
+ani.save(file_path + 'animation.gif', writer='imagemagick', fps=5)
 
 plt.show()
 

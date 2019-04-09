@@ -15,6 +15,14 @@ def getData():
     return df.values
 
 
+def createRandomPoints(num):
+    """
+    Generates num random datapoints between 0 and 20
+    """
+    datavalues = np.random.rand(num,3)
+    return datavalues*20
+
+
 def getRetainerSet(set):
     """
     Divides the set into to subsets,
