@@ -78,8 +78,11 @@ def makePlots(setInput, setRetainer, setMin):
     rectangle = plt.Rectangle((lowerBound[-1, 0], lowerBound[-1, 1]), diff, slack[1], alpha=0.5, fc="CornflowerBlue",
                               zorder=1)
     plt.gca().add_patch(rectangle)
-    file_path = os.getcwd() + "/2Dplots/figure0" + str(i).zfill(2) + ".png"
-    plt.savefig(file_path)
+    file_path = os.getcwd() + "/2Dplots"
+    if not os.path.isdir(file_path):
+        os.mkdir(file_path)
+    file_name = file_path + "/figure0" + str(i).zfill(2) + ".png"
+    plt.savefig(file_name)
     plt.show()
 
 

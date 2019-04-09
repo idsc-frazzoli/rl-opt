@@ -91,8 +91,11 @@ def makePlots(setInput, setRetainer, setMin):
     ax.scatter(setRetainer[:, 0], setRetainer[:, 1], setRetainer[:, 2], marker=".", zorder=2, label='Retained Elements')
     ax.scatter(setMin[:, 0], setMin[:, 1], setMin[:, 2], marker=".", zorder=3, label='Minimal Elements')
     plt.legend(loc='upper left')
-    file_path = os.getcwd() + "/3Dplots/figure0" + str(i).zfill(2) + ".png"
-    plt.savefig(file_path)
+    file_path = os.getcwd() + "/3Dplots"
+    if not os.path.isdir(file_path):
+        os.mkdir(file_path)
+    file_name = file_path + "/figure0" + str(i).zfill(2) + ".png"
+    plt.savefig(file_name)
     plt.show()
 
 
