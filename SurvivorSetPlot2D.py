@@ -6,7 +6,7 @@ import os
 
 
 # import data from csv as np.array
-def getData():
+def getDataFromCSV():
     """
     Retrieve Data from csv file
     """
@@ -87,7 +87,10 @@ def makePlots(setInput, setRetainer, setMin):
 
 
 # set up
-dataset = getData()
+dataset = getDataFromCSV()
+num = len(dataset)
+#num = 100
+#dataset = createRandomPoints(num)
 slack = np.array([2, 2])  # slack variable to be set by decision maker
 
 # iterate through data inputs and check whether retainer or not and if minimal
