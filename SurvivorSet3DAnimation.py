@@ -104,9 +104,13 @@ graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], mar
 graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], marker=".", zorder=3, label='Minimal Elements')
 
 ani = matplotlib.animation.FuncAnimation(fig, update_graph, 19, interval=500, blit=False)
-ax.legend()
-plt.show()
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+          fancybox=True, ncol=3)
+plt.tight_layout(pad=2)
+
 
 file_path = os.getcwd() + "/3Dplots/"
 ani.save(file_path + 'animation.gif', writer='imagemagick', fps=60)
+
+plt.show()
 
