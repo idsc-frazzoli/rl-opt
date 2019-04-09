@@ -58,8 +58,8 @@ def makePlots(setInput, setRetainer, setMin):
     """
     Create plots for each new point
     """
-    plt.scatter(setRetainer[:, 0], setRetainer[:, 1], marker=".", zorder=10, label='Retained Elements')
-    plt.scatter(setInput[:, 0], setInput[:, 1], marker=".", zorder=4, label='Input Elements')
+    plt.scatter(setRetainer[:, 0], setRetainer[:, 1], marker=".", zorder=10, label='Additional Retained Elements')
+    plt.scatter(setInput[:, 0], setInput[:, 1], marker=".", zorder=4, label='Discarded Elements')
     plt.scatter(setMin[:, 0], setMin[:, 1], marker=".", zorder=20, label='Minimal Elements')
     plt.xlabel('Objective 1 ($\sigma = 2$)')
     plt.ylabel('Objective 2 ($\sigma = 2$)')

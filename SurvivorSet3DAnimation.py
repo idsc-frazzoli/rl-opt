@@ -113,9 +113,9 @@ ax.set_ylabel('Y')
 ax.set_zlim3d([0.0, 20.0])
 ax.set_zlabel('Z')
 
-graph1 = ax.scatter(data[:, 0], data[:, 1], data[:, 2], marker=".", zorder=1, label='Input Elements')
-graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], marker=".", zorder=2, label='Retained Elements')
-graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], marker=".", zorder=3, label='Minimal Elements')
+graph1 = ax.scatter(data[:, 0], data[:, 1], data[:, 2], c="gray", marker=".", zorder=1, label='Discarded Elements')
+graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], c="blue", marker=".", zorder=2, label='Candidate Elements')
+graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], c="red", marker=".", zorder=3, label='Minimal Elements')
 
 ani = matplotlib.animation.FuncAnimation(fig, update_graph, num, interval=500, blit=False)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
