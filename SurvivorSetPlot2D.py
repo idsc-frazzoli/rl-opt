@@ -95,7 +95,6 @@ slack = np.array([2, 2])  # slack variable to be set by decision maker
 
 # iterate through data inputs and check whether retainer or not and if minimal
 for i in np.arange(len(dataset)):
-    data_point = dataset[i]
     currentInputSet = dataset[0:i + 1]
     retainerSet = getRetainerSet(currentInputSet)
     minimalElements = getMinElements(retainerSet)
