@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 import pandas as pd
+from matplotlib.lines import Line2D
 import os
 
 
@@ -19,36 +20,19 @@ class MinTracker:
         if len(self.candidates) == 0:
             self.candidates = x
             return
-
-        elif len(self.candidates.shape) != 2:
-            y = self.candidates
-            for i in range(0, 3):
-                if x[i] > y[i] + self.slack[i]:
-                    self.update_discarded(x)
-                    return
-                if x[i] + self.slack[i] < y[i]:
-                    discardable = True
-                    for index in range(i):
-                        discardable = discardable and np.less_equal(x[index], y[index])
-                    if discardable:
-                        self.candidates = x
-                        return
-            self.candidates = np.vstack((self.candidates, x))
-            return
-
         else:
             index_filter = np.ones(len(self.candidates), dtype=bool)
-            print(index_filter)
             for j in range(len(self.candidates)):
                 y = self.candidates[j, :]
+                current = x[0]
                 for i in range(0, 3):
-                    if x[i] > y[i] + self.slack[i]:
+                    if current[i] > y[i] + self.slack[i]:
                         self.update_discarded(x)
                         return
-                    if x[i] + self.slack[i] < y[i]:
+                    if current[i] + self.slack[i] < y[i]:
                         discardable = True
                         for index in range(i):
-                            discardable = discardable and np.less_equal(x[index], y[index])
+                            discardable = discardable and np.less_equal(current[index], y[index])
                         if discardable:
                             index_filter[j] = False
                             break
@@ -65,18 +49,12 @@ class MinTracker:
             return
         self.discarded = np.vstack((self.discarded, x))
 
-    def get_candidates(self):
-        return self.candidates
-
     def get_minimals(self):
         """
         Divides the set into to subsets,
         where one contains the points which are minimal
         and the is the complement of it.
         """
-        if len(self.candidates.shape) != 2:
-            return self.candidates, []
-
         x_min = np.amin(self.candidates[:, 0])
         x_sort = self.candidates[:, 0] <= x_min + self.slack[0]
         set_sorted_x = self.candidates[x_sort, :]
@@ -125,14 +103,19 @@ def makePlots(setInput, setRetainer, setMin,i):
     ax.set_ylabel('Y')
     ax.set_zlim3d([0.0, 20.0])
     ax.set_zlabel('Z')
+    legend_elements = [Line2D([0], [0], marker='o', color='w', label='Minimal Elements',
+                              markerfacecolor='b', markersize=10),
+                       Line2D([0], [0], marker='o', color='w', label='Candidate Elements',
+                              markerfacecolor='g', markersize=10),
+                       Line2D([0], [0], marker='o', color='w', label='Discarded Elements',
+                              markerfacecolor='y', markersize=10)]
     # generate scatter plots of the data
-    if setInput:
-        ax.scatter(setInput[:, 0], setInput[:, 1], setInput[:, 2], marker=".", zorder=1, label='Input Elements')
-    if setRetainer:
-        ax.scatter(setRetainer[:, 0], setRetainer[:, 1], setRetainer[:, 2], marker=".", zorder=2, label='Retained Elements')
-    ax.scatter(setMin[:, 0], setMin[:, 1], setMin[:, 2], marker=".", zorder=3, label='Minimal Elements')
-    legend_elements = []
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+    if setInput.size != 0:
+        ax.scatter(setInput[:, 0], setInput[:, 1], setInput[:, 2], marker=".", color='y', zorder=1, label='Input Elements')
+    if setRetainer.size != 0:
+        ax.scatter(setRetainer[:, 0], setRetainer[:, 1], setRetainer[:, 2], marker=".", color='g', zorder=2, label='Retained Elements')
+    ax.scatter(setMin[:, 0], setMin[:, 1], setMin[:, 2], marker=".", color='b', zorder=3, label='Minimal Elements')
+    ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
               fancybox=True, ncol=3)
     file_path = os.getcwd() + "/3Dplots"
     if not os.path.isdir(file_path):
@@ -149,35 +132,13 @@ def main():
     slack = np.array([2, 2, 2])  # slack variable to set by decision maker
 
     mintracker = MinTracker(slack)
-    x = dataset[0:1]
-    print(type(x))
-    mintracker.update_mintracker(x)
-    minimals, non_minimal_candidates = mintracker.get_minimals()
-    print(minimals)
-    print(type(minimals))
-    b = np.asarray(non_minimal_candidates)
-    print(b)
-    print(type(b))
-    a = np.asarray(mintracker.discarded)
-    print(a)
-    print(type(a))
-    #makePlots(mintracker.discarded, non_minimal_candidates, minimals,0)
 
-
-    for i in np.arange(1,len(dataset)):
-        x = dataset[i, :]
-        print(type(x))
+    for i in np.arange(len(dataset)):
+        x = np.reshape(dataset[i, :],(1,3))
         mintracker.update_mintracker(x)
         minimals, non_minimal_candidates = mintracker.get_minimals()
-        print(minimals)
-        print(type(minimals))
-        b = np.asarray(non_minimal_candidates)
-        print(b)
-        print(type(b))
-        a = np.asarray(mintracker.discarded)
-        print(a)
-        print(type(a))
-        #makePlots(mintracker.discarded, non_minimal_candidates, minimals,i)
+
+        makePlots(np.asarray(mintracker.discarded), np.asarray(non_minimal_candidates), minimals, i)
 
 
 if __name__ == "__main__":
