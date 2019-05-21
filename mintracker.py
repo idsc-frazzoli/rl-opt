@@ -1,4 +1,5 @@
 import numpy as np
+from typing import *
 
 
 class MinTracker:
@@ -7,16 +8,16 @@ class MinTracker:
     All inputs are discarded which are not candidates, meaning that they are and never will be minimal in a lexicographical
     semiordered sense."""
 
-    candidates = []
-    discarded = []
-
-    def __init__(self, slack):
+    def __init__(self, slack: List[float]):
         self.slack = slack
+        self.candidates = None
+        self.discarded = None
+        self.dim = len(slack)
 
-    def update_mintracker(self, x):
+    def update_mintracker(self, x: np.ndarray):
         """Updates the MinTracker when a new input element is available"""
         # if candidate set is empty add x
-        if len(self.candidates) == 0:
+        if self.candidates is None:
             self.candidates = x
             return
         else:
@@ -24,7 +25,7 @@ class MinTracker:
             for j in range(len(self.candidates)):
                 y = self.candidates[j, :]
                 current = x[0]
-                for i in range(0, 3):
+                for i in range(0, self.dim):
                     if current[i] > y[i] + self.slack[i]:
                         self.update_discarded(x)
                         return
@@ -41,10 +42,10 @@ class MinTracker:
 
             self.candidates = np.vstack((self.candidates[index_filter, :], x))
 
-    def update_discarded(self, x):
+    def __update_discarded(self, x):
         """Adds an element to the discarded set"""
-        if len(self.discarded) == 0:
-            self.discarded = x
+        if self.discarded is None:
+            self.discarded = np.reshape(x, (1, self.dim))
             return
         self.discarded = np.vstack((self.discarded, x))
 
@@ -54,16 +55,18 @@ class MinTracker:
         where one contains the points which are minimal
         and the is the complement of it.
         """
-        x_min = np.amin(self.candidates[:, 0])
-        x_sort = self.candidates[:, 0] <= x_min + self.slack[0]
-        set_sorted_x = self.candidates[x_sort, :]
-        set_retained_x = self.candidates[np.invert(x_sort), :]
+        minimals = self.candidates.copy()
+        set_retained = []
 
-        y_min = np.amin(set_sorted_x[:, 1])
-        y_sort = set_sorted_x[:, 1] <= y_min + self.slack[1]
-        set_sorted_y = set_sorted_x[y_sort, :]
-        set_retained_y = np.concatenate((set_retained_x, set_sorted_x[np.invert(y_sort), :]), axis=0)
+        for i in range(self.dim):
+            min = np.amin(minimals[:, i])
+            sort = minimals[:, i] <= min + self.slack[i]
+            set_sorted = minimals[sort, :]
+            try:
+                set_retained = np.concatenate((set_retained, minimals[np.invert(sort), :]), axis=0)
+            except ValueError:
+                set_retained = minimals[np.invert(sort), :]
 
-        z_min = np.amin(set_sorted_y[:, 2])
-        z_sort = set_sorted_y[:, 2] <= z_min + self.slack[2]
-        return set_sorted_y[z_sort, :], np.concatenate((set_retained_y, set_sorted_y[np.invert(z_sort), :]), axis=0)
+            minimals = set_sorted
+
+        return minimals, set_retained
