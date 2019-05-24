@@ -1,4 +1,5 @@
 import numpy as np
+from typing import *
 from matplotlib import pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
 import pandas as pd
@@ -17,7 +18,7 @@ def get_data():
     return df.values
 
 
-def create_random_points(num):
+def create_random_points(num: int):
     """
     Generates num random datapoints between 0 and 1
     """
@@ -25,7 +26,7 @@ def create_random_points(num):
     return datavalues
 
 
-def make_plots(discarded_set, non_minimal_candidates, minimal_set, step):
+def make_plots(discarded_set: np.ndarray, non_minimal_candidates: np.ndarray, minimal_set: np.ndarray, step: int):
     """
     Generates the 3D plots for three sets:
     """
@@ -75,7 +76,7 @@ def make_plots(discarded_set, non_minimal_candidates, minimal_set, step):
 def main():
     # set up data and slack vector
     dataset = create_random_points(50)
-    slack = np.array([0.05, 0.05, 0.05])  # slack variable to set by decision maker
+    slack = [0.05, 0.05, 0.05]  # slack variable to set by decision maker
 
     mintracker_lex_semi = MinTracker(slack)
 

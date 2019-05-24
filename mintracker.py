@@ -27,7 +27,7 @@ class MinTracker:
                 current = x[0]
                 for i in range(0, self.dim):
                     if current[i] > y[i] + self.slack[i]:
-                        self.update_discarded(x)
+                        self.__update_discarded(x)
                         return
                     if current[i] + self.slack[i] < y[i]:
                         discardable = True
@@ -38,7 +38,7 @@ class MinTracker:
                             break
 
             for item in self.candidates[np.invert(index_filter), :]:
-                self.update_discarded(item)
+                self.__update_discarded(item)
 
             self.candidates = np.vstack((self.candidates[index_filter, :], x))
 
@@ -55,7 +55,12 @@ class MinTracker:
         where one contains the points which are minimal
         and the is the complement of it.
         """
-        minimals = self.candidates.copy()
+        try:
+            minimals = self.candidates.copy()
+        except AttributeError:
+            print('Candidate set is empty!')
+            return [], []
+
         set_retained = []
 
         for i in range(self.dim):

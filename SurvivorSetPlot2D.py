@@ -92,8 +92,8 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
 
 def main():
     # set up data and slack vector
-    # num = 100
-    dataset = getDataFromCSV()
+    num = 100
+    dataset = create_random_points(num)
     slack = [0.2, 0.2]
 
     mintracker_lex_semi = MinTracker(slack)
