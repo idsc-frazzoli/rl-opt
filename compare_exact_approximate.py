@@ -2,20 +2,9 @@ import numpy as np
 from typing import *
 from matplotlib import pyplot as plt
 import mpl_toolkits.mplot3d.axes3d as p3
-import pandas as pd
 from matplotlib.lines import Line2D
 import os
-from mintracker import ExactMinTracker
-
-
-# import data from csv as np.array
-def get_data():
-    """
-    Retrieves the input data from the csv files.
-    """
-    file_name = "inputData3D.csv"
-    df = pd.read_csv(file_name)
-    return df.values
+from mintracker import ExactMinTracker, ApproximateMinTracker
 
 
 def create_random_points(num: int):
@@ -26,7 +15,11 @@ def create_random_points(num: int):
     return datavalues
 
 
-def make_plots(discarded_set: np.ndarray, non_minimal_candidates: np.ndarray, minimal_set: np.ndarray, step: int):
+def make_plots(discarded_set: np.ndarray,
+               non_minimal_candidates: np.ndarray,
+               minimal_set: np.ndarray,
+               step: int,
+               version: str):
     """
     Generates the 3D plots for three sets:
     """
@@ -63,10 +56,10 @@ def make_plots(discarded_set: np.ndarray, non_minimal_candidates: np.ndarray, mi
     ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
               fancybox=True, ncol=3)
 
-    file_path = os.getcwd() + "/3Dplots"
+    file_path = os.getcwd() + '/3Dplots/' + version
     if not os.path.isdir(file_path):
         os.mkdir(file_path)
-    file_name = file_path + "/figure0" + str(step).zfill(2) + ".png"
+    file_name = file_path + '/figure0' + str(step).zfill(2) + '.png'
     plt.savefig(file_name)
     plt.tight_layout(pad=2)
     #plt.show()
@@ -75,17 +68,28 @@ def make_plots(discarded_set: np.ndarray, non_minimal_candidates: np.ndarray, mi
 
 def main():
     # set up data and slack vector
-    dataset = create_random_points(50)
-    slack = [0.05, 0.05, 0.05]  # slack variable to set by decision maker
+    dataset = create_random_points(1000)
+    slack = [0.2, 0.2, 0.2]  # slack variable to set by decision maker
+    epsilon = [0.0001, 0.0001, 0.0001]
 
-    mintracker_lex_semi = ExactMinTracker(slack)
+    mintracker_exact = ExactMinTracker(slack)
+    mintracker_approximate = ApproximateMinTracker(slack, epsilon)
 
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 3))
-        mintracker_lex_semi.update_mintracker(x)
-        minimals, non_minimal_candidates = mintracker_lex_semi.get_minimals()
+        mintracker_exact.update_mintracker(x)
+        mintracker_approximate.update_mintracker(x)
+        #minimals, non_minimal_candidates = mintracker_exact.get_minimals()
+        #minimals_a, non_minimal_candidates_a = mintracker_approximate.get_minimals()
 
-        make_plots(mintracker_lex_semi.discarded, non_minimal_candidates, minimals, i)
+        #make_plots(mintracker_exact.discarded, non_minimal_candidates, minimals, i, 'exact')
+        #make_plots(mintracker_approximate.discarded, non_minimal_candidates_a, minimals_a, i, 'approximate')
+
+    print('Exact Solutions:')
+    print(mintracker_exact.get_minimals())
+    print('Approximate Solutions:')
+    print(mintracker_approximate.get_minimals())
+
 
 
 if __name__ == "__main__":

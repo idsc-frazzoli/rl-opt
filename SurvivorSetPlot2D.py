@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import os
-from mintracker import MinTracker
+from mintracker import ExactMinTracker
 from matplotlib.lines import Line2D
 
 
@@ -96,7 +96,7 @@ def main():
     dataset = create_random_points(num)
     slack = [0.2, 0.2]
 
-    mintracker_lex_semi = MinTracker(slack)
+    mintracker_lex_semi = ExactMinTracker(slack)
 
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 2))
