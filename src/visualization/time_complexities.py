@@ -1,14 +1,12 @@
 import numpy as np
 from typing import *
 import time
+import os
 import seaborn as sns
-import plotly.plotly as py
 import plotly.graph_objs as go
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-#import matplotlib
-#matplotlib.use('TkAgg')
+from plotly.offline import plot
 import matplotlib.pyplot as plt
-from mintracker import ExactMinTracker
+from optimization.mintracker import ExactMinTracker
 
 
 def evaluate(data_set: np.ndarray, slack: List[float]):
@@ -148,16 +146,17 @@ def make_plotly(times_list: List[List[float]], number_of_samples: List[int]):
 
     data = [trace0, trace1, trace2]
     fig = go.Figure(data=data, layout=layout)
-    plot(fig, filename='RunningTimesComplexities.html')
+    outdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plots', 'complexities')
+    if not os.path.isdir(outdir):
+        os.makedirs(outdir)
+    filename = os.path.join(outdir, 'RunningTimesComplexities.html')
+    plot(fig, filename=filename)
 
 
 def main():
     slack = [0.1, 0.1, 0.1]
-    number_of_executions = 10000                                                     # number of experiments
-    number_of_samples = [250, 500, 750, 1000, 1250,
-                         1500, 1750, 2000, 2250, 2500, 2750, 3000,3250, 3500,
-                         3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750, 6000,
-                         6250, 6500, 6750, 7000, 7500, 8000, 8500, 9000, 9500, 10000]                              # number of samples
+    number_of_executions = 10  # number of experiments
+    number_of_samples = [250]  # number of samples
     times = get_running_times(number_of_executions, number_of_samples, slack)
     make_histogram(times)
     make_plotly(times, number_of_samples)

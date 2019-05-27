@@ -1,8 +1,7 @@
 import unittest
 import numpy as np
-from numpy.distutils.system_info import x11_info
 
-from mintracker import ExactMinTracker, ApproximateMinTracker
+from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
 
 class MinTrackerTest(unittest.TestCase):
     def test_simple(self):

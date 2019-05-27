@@ -1,18 +1,18 @@
-import matplotlib.pyplot as plt
+import os
 import numpy as np
 import pandas as pd
-import os
-from mintracker import ExactMinTracker
+import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
 
 
 # import data from csv as np.array
-def getDataFromCSV():
+def get_data_from_csv():
     """
     Retrieve Data from csv file
     """
-    file_name = "inputData.csv"
+    file_name = os.path.join('resources', 'inputData.csv')
     df = pd.read_csv(file_name)
     return df.values
 
@@ -25,7 +25,7 @@ def create_random_points(num):
     return datavalues
 
 
-def getLowerBound(non_discarded_set):
+def get_lower_bound(non_discarded_set):
     """
     Get lower bound of retainer set for creation of rectangle in plot
     """
@@ -39,7 +39,7 @@ def getLowerBound(non_discarded_set):
     return lex_sorted_set[y_sort, :]
 
 
-def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_bound, slack, i):
+def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_bound, slack, i, version: str):
     """
     Create plots for each new point
     """
@@ -81,31 +81,44 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
                               zorder=1)
     plt.gca().add_patch(rectangle)
 
-    file_path = os.getcwd() + "/2Dplots"
+    file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plots', '2Dplots', version)
     if not os.path.isdir(file_path):
-        os.mkdir(file_path)
-    file_name = file_path + "/figure0" + str(i).zfill(2) + ".png"
-    plt.savefig(file_name)
-    plt.show()
+        os.makedirs(file_path)
+    file_name = 'figure0' + str(i).zfill(2) + '.png'
+    file_path = os.path.join(file_path, file_name)
+
+    plt.savefig(file_path)
+    #plt.show()
     plt.close()
 
 
 def main():
     # set up data and slack vector
     num = 100
-    dataset = create_random_points(num)
+    #dataset = create_random_points(num)
+    dataset = get_data_from_csv()
     slack = [0.2, 0.2]
+    epsilon = [0.05, 0.05]
 
-    mintracker_lex_semi = ExactMinTracker(slack)
+    mintracker_exact = ExactMinTracker(slack)
+    mintracker_approximate = ApproximateMinTracker(slack, epsilon)
 
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 2))
-        mintracker_lex_semi.update_mintracker(x)
-        minimals, non_minimal_candidates = mintracker_lex_semi.get_minimals()
-        lower_bound = getLowerBound(mintracker_lex_semi.candidates)
-        print(lower_bound)
 
-        make_plots(mintracker_lex_semi.discarded, non_minimal_candidates, minimals, lower_bound, slack, i)
+        mintracker_exact.update_mintracker(x)
+        mintracker_approximate.update_mintracker(x)
+
+        minimals, non_minimal_candidates = mintracker_exact.get_minimals()
+        minimals_a, non_minimal_candidates_a = mintracker_approximate.get_minimals()
+
+        lower_bound = get_lower_bound(mintracker_exact.candidates)
+        lower_bound_a = get_lower_bound(mintracker_exact.candidates)
+
+        make_plots(mintracker_exact.discarded, non_minimal_candidates, minimals,
+                   lower_bound, slack, i, 'exact')
+        make_plots(mintracker_approximate.discarded, non_minimal_candidates_a, minimals_a,
+                   lower_bound_a, slack, i, 'approximate')
 
 
 if __name__ == "__main__":
