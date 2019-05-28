@@ -6,7 +6,6 @@ import pandas as pd
 import os
 
 
-
 def getDataFromCSV():
     """
     Retrieves the input data from the csv files.

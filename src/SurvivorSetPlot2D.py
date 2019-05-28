@@ -106,8 +106,8 @@ def main():
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 2))
 
-        mintracker_exact.update_mintracker(x)
-        mintracker_approximate.update_mintracker(x)
+        mintracker_exact.update_mintracker_exact(x)
+        mintracker_approximate.update_mintracker_approx(x)
 
         minimals, non_minimal_candidates = mintracker_exact.get_minimals()
         minimals_a, non_minimal_candidates_a = mintracker_approximate.get_minimals()

@@ -11,7 +11,6 @@ class MinTracker:
     def __init__(self, slack: List[float]):
         self.slack = slack
         self.candidates = None
-        self.discarded = None
         self.dim = len(slack)
 
     def get_minimals(self):
@@ -24,29 +23,16 @@ class MinTracker:
             minimals = self.candidates.copy()
         except AttributeError:
             print('Candidate set is empty!')
-            return [], []
-
-        set_retained = []
+            return []
 
         for i in range(self.dim):
             min_value = np.amin(minimals[:, i])
             sort = minimals[:, i] <= min_value + self.slack[i]
             set_sorted = minimals[sort, :]
-            try:
-                set_retained = np.concatenate((set_retained, minimals[np.invert(sort), :]), axis=0)
-            except ValueError:
-                set_retained = minimals[np.invert(sort), :]
 
             minimals = set_sorted
 
-        return minimals, set_retained
-
-    def update_discarded(self, x):
-        """Adds an element to the discarded set"""
-        if self.discarded is None:
-            self.discarded = np.reshape(x, (1, self.dim))
-            return
-        self.discarded = np.vstack((self.discarded, x))
+        return minimals
 
 
 class ExactMinTracker(MinTracker):
@@ -74,15 +60,11 @@ class ExactMinTracker(MinTracker):
                 for i in range(0, self.dim):
                     if current[i] > y[i] + self.slack[i]:
                         if self.discardable_exact(y, current, i):
-                            self.update_discarded(x)
                             return
                     if current[i] + self.slack[i] < y[i]:
                         if self.discardable_exact(current, y, i):
                             index_filter[j] = False
                             break
-
-            for item in self.candidates[np.invert(index_filter), :]:
-                self.update_discarded(item)
 
             self.candidates = np.vstack((self.candidates[index_filter, :], x))
 
@@ -129,7 +111,6 @@ class ApproximateMinTracker(MinTracker):
             for j in range(len(self.candidates)):
                 y = self.candidates[j, :]
                 if self.preanalysis(current, y):
-                    self.update_discarded(x)
                     return
 
             index_filter = np.ones(len(self.candidates), dtype=bool)
@@ -138,15 +119,11 @@ class ApproximateMinTracker(MinTracker):
                 for i in range(0, self.dim):
                     if current[i] > y[i] + self.slack[i]:
                         if self.discardable_approx(y, current, i):
-                            self.update_discarded(x)
                             return
                     if current[i] + self.slack[i] < y[i]:
                         if self.discardable_approx(current, y, i):
                             index_filter[j] = False
                             break
-
-            for item in self.candidates[np.invert(index_filter), :]:
-                self.update_discarded(item)
 
             self.candidates = np.vstack((self.candidates[index_filter, :], x))
 
@@ -170,7 +147,7 @@ class ApproximateMinTracker(MinTracker):
         :return: True if to be discarded
         """
         for index in range(i):
-            if np.greater(x[index] - self.epsilon[index], y[index]):
+            if np.greater_equal(x[index] - self.epsilon[index], y[index]):
                 return False
         return True
 
