@@ -1,0 +1,14 @@
+# file
+############
+.idea/
+
+
+# generated plots
+src/plots
+
+# pycache
+*/__pycache__
+src/optimization/__pycache__
+
+# virualenvironment
+env
