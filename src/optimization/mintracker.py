@@ -1,24 +1,30 @@
-import numpy as np
 from typing import *
+
+import numpy as np
 
 
 class MinTracker:
     """MinTracker which keeps track of the candidate set of input elements and those who can be discarded.
     An input element is a candidate if it is minimal or it might be come minimal in the future.
     All inputs are discarded which are not candidates, meaning that they are and never will be minimal in a lexicographical
-    semiordered sense."""
+    semiordered sense.
+
+    This class shall be primarily used for evaluation and animation purposes.
+    """
 
     def __init__(self, slack: List[float]):
         self.slack = slack
         self.candidates = None
         self.discarded = None
         self.dim = len(slack)
+        self.number_comparisons = 0
 
     def get_minimals(self):
         """
         Divides the candidate set into to subsets,
         where one contains the points which are minimal
         and the other is the complement of it.
+        :return: minimals, non minimal candidates
         """
         try:
             minimals = self.candidates.copy()
@@ -48,6 +54,9 @@ class MinTracker:
             return
         self.discarded = np.vstack((self.discarded, x))
 
+    def get_number_of_comparisons(self):
+        return self.number_comparisons
+
 
 class ExactMinTracker(MinTracker):
     """Exact MinTracker of the lexicographic semiorder problem."""
@@ -70,6 +79,7 @@ class ExactMinTracker(MinTracker):
             current = x[0]
             index_filter = np.ones(len(self.candidates), dtype=bool)
             for j in range(len(self.candidates)):
+                self.number_comparisons += 1
                 y = self.candidates[j, :]
                 for i in range(0, self.dim):
                     if current[i] > y[i] + self.slack[i]:
@@ -105,13 +115,14 @@ class ApproximateMinTracker(MinTracker):
     not yet another point stored which is in in its neighbouhood, e.g. the hypercuboid with edges epsilon
     centered around the point."""
 
-    epsilon: List[float]        # if difference between points in dimension i is less than epsilon_i they are close
+    epsilon: List[float]  # if difference between points in dimension i is less than epsilon_i they are close
 
     def __init__(self, slack: List[float], epsilon: List[float]):
         MinTracker.__init__(self, slack)
         if len(slack) != len(epsilon):
             raise ValueError('Epsilon and slack vector not of same size!')
         self.epsilon = epsilon
+        self.number_neighbourhood_checks = 0
 
     def update_mintracker_approx(self, x: np.ndarray):
         """
@@ -128,6 +139,7 @@ class ApproximateMinTracker(MinTracker):
             current = x[0]
             for j in range(len(self.candidates)):
                 y = self.candidates[j, :]
+                self.number_neighbourhood_checks += 1
                 if self.preanalysis(current, y):
                     self.update_discarded(x)
                     return
@@ -136,6 +148,7 @@ class ApproximateMinTracker(MinTracker):
             for j in range(len(self.candidates)):
                 y = self.candidates[j, :]
                 for i in range(0, self.dim):
+                    self.number_comparisons += 1
                     if current[i] > y[i] + self.slack[i]:
                         if self.discardable_approx(y, current, i):
                             self.update_discarded(x)
@@ -174,5 +187,5 @@ class ApproximateMinTracker(MinTracker):
                 return False
         return True
 
-
-
+    def get_number_of_nh_checks(self):
+        return self.number_neighbourhood_checks

@@ -1,7 +1,8 @@
 import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
@@ -62,12 +63,14 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
     plt.title('Lexicographic Survivor Set', pad=10)
 
     ax.legend(handles=legend_elements, bbox_to_anchor=(0., -0.3, 1., .102), loc=10,
-           ncol=3, borderaxespad=0.)
+              ncol=3, borderaxespad=0.)
 
     if non_minimal_candidate_set.size != 0:
-        plt.scatter(non_minimal_candidate_set[:, 0], non_minimal_candidate_set[:, 1], marker=".", color='g', zorder=10, label='Candidate Elements')
+        plt.scatter(non_minimal_candidate_set[:, 0], non_minimal_candidate_set[:, 1], marker=".", color='g', zorder=10,
+                    label='Candidate Elements')
     if discarded_set is not None:
-        plt.scatter(discarded_set[:, 0], discarded_set[:, 1], marker=".", color='y', zorder=4, label='Discarded Elements')
+        plt.scatter(discarded_set[:, 0], discarded_set[:, 1], marker=".", color='y', zorder=4,
+                    label='Discarded Elements')
     ax.scatter(minimal_set[:, 0], minimal_set[:, 1], marker=".", color='b', zorder=20, label='Minimal Elements')
 
     for j in range(len(lower_bound) - 1):
@@ -88,14 +91,14 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
     file_path = os.path.join(file_path, file_name)
 
     plt.savefig(file_path)
-    #plt.show()
+    # plt.show()
     plt.close()
 
 
 def main():
     # set up data and slack vector
     num = 100
-    #dataset = create_random_points(num)
+    # dataset = create_random_points(num)
     dataset = get_data_from_csv()
     slack = [0.2, 0.2]
     epsilon = [0.05, 0.05]
