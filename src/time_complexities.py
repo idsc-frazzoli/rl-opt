@@ -1,11 +1,13 @@
-import numpy as np
-from typing import *
-import time
 import os
-import seaborn as sns
-import plotly.graph_objs as go
-from plotly.offline import plot
+import time
+from typing import *
+
 import matplotlib.pyplot as plt
+import numpy as np
+import plotly.graph_objs as go
+import seaborn as sns
+from plotly.offline import plot
+
 from optimization import mintracker_purely_optimal
 from optimization.helpers import not_contained_in_exact, not_contained_in_approximate, maximal_difference
 
@@ -18,7 +20,7 @@ def evaluate_exact(data_set: np.ndarray, slack: List[float]):
     :param slack: slack parameters used in optimization
     :return: returns minimal elements
     """
-    mintracker_exact = mintracker_purely_optimal.ExactMinTracker(slack)
+    mintracker_exact = mintracker_purely_optimal.ExactPureMinTracker(slack)
     for i in np.arange(len(data_set)):
         x = data_set[i, :]
         mintracker_exact.update_mintracker_exact(x)
@@ -34,7 +36,7 @@ def evaluate_approximate(data_set: np.ndarray, slack: List[float], epsilon: List
     :param: epsilon: epsilon approximation ratio
     :return: returns minimal elements
     """
-    mintracker_approximate = mintracker_purely_optimal.ApproximateMinTracker(slack, epsilon)
+    mintracker_approximate = mintracker_purely_optimal.ApproximatePureMinTracker(slack, epsilon)
     for i in np.arange(len(data_set)):
         x = data_set[i, :]
         mintracker_approximate.update_mintracker_approx(x)
@@ -83,6 +85,7 @@ def make_histogram(times_list: List[List[float]], version: str):
     """
     Plots the combined histogram for teh running times for all number of samples.
     :param times_list: List of execution times
+    :param: version: 'Exact' or 'Approximate'
     :return:
     """
     average_case = []

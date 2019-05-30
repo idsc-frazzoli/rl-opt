@@ -1,10 +1,9 @@
 import os
+
 import numpy as np
 import pandas as pd
-
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
-import mpl_toolkits.mplot3d.axes3d as p3
 
 from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
 
@@ -73,13 +72,13 @@ def make_plots(discarded_set: np.ndarray, non_minimal_candidates: np.ndarray,
 
     plt.tight_layout(pad=2)
     plt.savefig(file_path)
-    #plt.show()
+    # plt.show()
     plt.close()
 
 
 def main():
     # set up data and slack vector
-    #dataset = create_random_points(100)
+    # dataset = create_random_points(100)
     dataset = get_data_from_csv()
     slack = [0.2, 0.2, 0.2]  # slack variable to set by decision maker
     epsilon = [0.0001, 0.0001, 0.0001]

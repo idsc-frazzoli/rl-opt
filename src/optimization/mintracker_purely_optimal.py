@@ -1,8 +1,9 @@
-import numpy as np
 from typing import *
 
+import numpy as np
 
-class MinTracker:
+
+class PureMinTracker:
     """MinTracker which keeps track of the candidate set of input elements and those who can be discarded.
     An input element is a candidate if it is minimal or it might be come minimal in the future.
     All inputs are discarded which are not candidates, meaning that they are and never will be minimal in a lexicographical
@@ -35,11 +36,11 @@ class MinTracker:
         return minimals
 
 
-class ExactMinTracker(MinTracker):
+class ExactPureMinTracker(PureMinTracker):
     """Exact MinTracker of the lexicographic semiorder problem."""
 
     def __init__(self, slack: List[float]):
-        MinTracker.__init__(self, slack)
+        PureMinTracker.__init__(self, slack)
 
     def update_mintracker_exact(self, x: np.ndarray):
         """
@@ -82,15 +83,15 @@ class ExactMinTracker(MinTracker):
         return True
 
 
-class ApproximateMinTracker(MinTracker):
+class ApproximatePureMinTracker(PureMinTracker):
     """Approximate MinTracker of the lexicographic semiorder problem, where solutions will only be stored if there is
     not yet another point stored which is in in its neighbouhood, e.g. the hypercuboid with edges epsilon
     centered around the point."""
 
-    epsilon: List[float]        # if difference between points in dimension i is less than epsilon_i they are close
+    epsilon: List[float]  # if difference between points in dimension i is less than epsilon_i they are close
 
     def __init__(self, slack: List[float], epsilon: List[float]):
-        MinTracker.__init__(self, slack)
+        PureMinTracker.__init__(self, slack)
         if len(slack) != len(epsilon):
             raise ValueError('Epsilon and slack vector not of same size!')
         self.epsilon = epsilon
@@ -150,6 +151,3 @@ class ApproximateMinTracker(MinTracker):
             if np.greater_equal(x[index] - self.epsilon[index], y[index]):
                 return False
         return True
-
-
-

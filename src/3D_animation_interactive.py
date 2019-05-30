@@ -1,9 +1,9 @@
-import numpy as np
-from matplotlib import pyplot as plt
-import mpl_toolkits.mplot3d.axes3d as p3
-import matplotlib.animation
-import pandas as pd
 import os
+
+import matplotlib.animation
+import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 
 
 def getDataFromCSV():
@@ -19,8 +19,8 @@ def createRandomPoints(num):
     """
     Generates num random datapoints between 0 and 20
     """
-    datavalues = np.random.rand(num,3)
-    return datavalues*20
+    datavalues = np.random.rand(num, 3)
+    return datavalues * 20
 
 
 def getRetainerSet(set):
@@ -82,7 +82,7 @@ def update_graph(num):
     """
     Update the graph with the current sets
     """
-    currentInputSet = dataset[0:num+1]
+    currentInputSet = dataset[0:num + 1]
     feasibleSet, discardedSet = getRetainerSet(currentInputSet)
     minimalElements, retainedSet = getMinElements(feasibleSet)
     graph1._offsets3d = (discardedSet[:, 0], discardedSet[:, 1], discardedSet[:, 2])
@@ -92,8 +92,8 @@ def update_graph(num):
 
 
 # set up data and slack vector
-#dataset = getDataFromCSV()
-#num = len(dataset)
+# dataset = getDataFromCSV()
+# num = len(dataset)
 num = 100
 dataset = createRandomPoints(num)
 slack = np.array([2, 2, 2])  # slack variable to set by decision maker
@@ -112,18 +112,19 @@ ax.set_ylabel('Y')
 ax.set_zlim3d([0.0, 20.0])
 ax.set_zlabel('Z')
 
-graph1 = ax.scatter(discardedSet[:, 0], discardedSet[:, 1], discardedSet[:, 2], c="gray", marker=".", zorder=1, label='Discarded Elements')
-graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], c="blue", marker=".", zorder=2, label='Candidate Elements')
-graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], c="red", marker=".", zorder=3, label='Minimal Elements')
+graph1 = ax.scatter(discardedSet[:, 0], discardedSet[:, 1], discardedSet[:, 2], c="gray", marker=".", zorder=1,
+                    label='Discarded Elements')
+graph2 = ax.scatter(retainedSet[:, 0], retainedSet[:, 1], retainedSet[:, 2], c="blue", marker=".", zorder=2,
+                    label='Candidate Elements')
+graph3 = ax.scatter(minimalElements[:, 0], minimalElements[:, 1], minimalElements[:, 2], c="red", marker=".", zorder=3,
+                    label='Minimal Elements')
 
 ani = matplotlib.animation.FuncAnimation(fig, update_graph, num, interval=500, blit=False)
 ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
           fancybox=True, ncol=3)
 plt.tight_layout(pad=2)
 
-
 file_path = os.getcwd() + "/3Dplots/"
 ani.save(file_path + 'animation.gif', writer='imagemagick', fps=5)
 
 plt.show()
-

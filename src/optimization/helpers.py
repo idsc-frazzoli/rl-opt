@@ -1,7 +1,13 @@
 import numpy as np
-from typing import *
+
 
 def find_equals(approximate: np.ndarray, exact: np.ndarray):
+    """
+
+    :param approximate:
+    :param exact:
+    :return:
+    """
     count = 0
     print('Equal entries for approximate and exact algorithm:')
     for i in range(len(approximate)):
@@ -15,8 +21,14 @@ def find_equals(approximate: np.ndarray, exact: np.ndarray):
 
 
 def not_contained_in_exact(approximate: np.ndarray, exact: np.ndarray):
+    """
+
+    :param approximate:
+    :param exact:
+    :return:
+    """
     count = 0
-    print('Entries found in approximate but not in exact algorithm:')
+    # print('Entries found in approximate but not in exact algorithm:')
     index_filter = np.zeros(len(approximate), dtype=bool)
     for i in range(len(approximate)):
         current = approximate[i, :]
@@ -31,11 +43,17 @@ def not_contained_in_exact(approximate: np.ndarray, exact: np.ndarray):
             count += 1
 
     different_entries = approximate[index_filter, :]
-    print(f'Total number of entries found in approximate that are different to exact entries: {count}')
+    # print(f'Total number of entries found in approximate that are different to exact entries: {count}')
     return different_entries
 
 
 def maximal_difference(different_entries, exact):
+    """
+
+    :param different_entries:
+    :param exact:
+    :return:
+    """
     max_diff = 0.0
     for i in range(len(different_entries)):
         current = different_entries[i, :]
@@ -51,6 +69,12 @@ def maximal_difference(different_entries, exact):
 
 
 def not_contained_in_approximate(approximate: np.ndarray, exact: np.ndarray):
+    """
+
+    :param approximate:
+    :param exact:
+    :return:
+    """
     count = 0
     print('Entries found in exact but not in approximate algorithm:')
     index_filter = np.zeros(len(exact), dtype=bool)
