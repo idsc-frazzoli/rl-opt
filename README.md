@@ -1,4 +1,5 @@
-# LexSemiorderSurvivorSet
+# rl-opt
+
 Generates 2D and 3D plots and animations of the survivor set for a given lexicographic semiorder.
 
 ## Lexicographic Semiorder
