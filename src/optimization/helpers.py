@@ -47,31 +47,48 @@ def not_contained_in_exact(approximate: np.ndarray, exact: np.ndarray):
     return different_entries
 
 
-def maximal_difference(different_entries, exact):
+def no_differences(approximate: np.ndarray, exact: np.ndarray):
+    for i in range(len(approximate)):
+        current = approximate[i, :]
+        any_equals = False
+        for j in range(len(exact)):
+            to_compare = exact[j, :]
+            if all(current == to_compare):
+                any_equals = True
+
+        if not any_equals:
+            return False
+
+    return True
+
+
+def maximal_difference(exact, approximate, epsilon):
     """
 
-    :param different_entries:
-    :param exact:
-    :return:
+    :param approximate: approximate minimal set
+    :param exact: exact minimal set
+    :return: maximal difference of any element in exact compared to approximate set
     """
-    max_diff = 0.0
+
+    different_entries = not_contained_in_approximate(approximate, exact)
+
     for i in range(len(different_entries)):
         current = different_entries[i, :]
 
-        for j in range(len(exact)):
+        for j in range(len(approximate)):
             to_compare = exact[j, :]
             differences = np.subtract(current, to_compare)
-            max_difference = np.max(np.abs(differences))
-            max_diff = max_diff if max_diff > max_difference else max_difference
+            max_difference = np.abs(np.max(differences))
 
-    print(f'Maximal difference between points is {max_diff}')
-    return max_diff
+            for j in epsilon:
+                if max_difference > epsilon[i]:
+                    print(f'Maximal difference between points is {max_difference}')
 
 
 def not_contained_in_approximate(approximate: np.ndarray, exact: np.ndarray):
     """
 
-    :param approximate:
+    :param approximate: approximate set
     :param exact:
     :return:
     """
@@ -92,4 +109,28 @@ def not_contained_in_approximate(approximate: np.ndarray, exact: np.ndarray):
 
     different_entries = exact[index_filter, :]
     print(f'Total number of entries found in exact that are different to approximate entries: {count}')
+    return different_entries
+
+
+def not_contained_in(set_a: np.ndarray, set_b: np.ndarray):
+    """
+
+    :param set_a: subset
+    :param set_b: superset
+    :return:
+    """
+    index_filter = np.zeros(len(set_b), dtype=bool)
+    for i in range(len(set_b)):
+        current = set_b[i, :]
+        any_equals = False
+        for j in range(len(set_a)):
+            to_compare = set_a[j, :]
+            if all(current == to_compare):
+                any_equals = True
+
+        if not any_equals:
+            index_filter[i] = True
+
+    different_entries = set_b[index_filter, :]
+
     return different_entries

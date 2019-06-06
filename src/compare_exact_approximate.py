@@ -5,7 +5,7 @@ import numpy as np
 import plotly.graph_objs as go
 from plotly.offline import plot
 
-from optimization.helpers import not_contained_in_exact, maximal_difference
+from optimization.helpers import not_contained_in_exact, maximal_difference, no_differences
 from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
 
 
@@ -20,60 +20,61 @@ def create_random_points(num: int):
 def comparison(dataset: np.ndarray,
                exact_min_tracker: ExactMinTracker,
                approximate_min_tracker: ApproximateMinTracker):
-    max_size_candidates_exact = 0
-    max_size_candidates_approx = 0
+
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 3))
+
+        candidates_e_old = exact_min_tracker.candidates
+        candiates_a_old = approximate_min_tracker.candidates
 
         exact_min_tracker.update_mintracker_exact(x)
         approximate_min_tracker.update_mintracker_approx(x)
 
-        max_size_candidates_exact = max_size_candidates_exact if max_size_candidates_exact > len(
-            exact_min_tracker.candidates) else len(exact_min_tracker.candidates)
-        max_size_candidates_approx = max_size_candidates_approx if max_size_candidates_approx > len(
-            approximate_min_tracker.candidates) else len(approximate_min_tracker.candidates)
-
     minimals, non_minimal_candidates = exact_min_tracker.get_minimals()
     minimals_a, non_minimal_candidates_a = approximate_min_tracker.get_minimals()
 
-    print(f'Number of exact solutions: {len(minimals)}')
-
-    print(f'Number of approximate solutions: {len(minimals_a)}')
     comparisons_exact = exact_min_tracker.number_comparisons
-    comparisons_approximate = approximate_min_tracker.number_comparisons + approximate_min_tracker.number_neighbourhood_checks
+    comparisons_approximate = approximate_min_tracker.number_comparisons
 
-    # find_equals(minimals_a, minimals)
-    different_entries = not_contained_in_exact(minimals_a, minimals)
-    max_diff = maximal_difference(different_entries, minimals)
-    # not_contained_in_approximate(minimals_a, minimals)
+    max_num_candidates_e = exact_min_tracker.max_candidates
+    max_num_candidates_a = approximate_min_tracker.max_candidates
 
-    return comparisons_exact, comparisons_approximate, max_diff
+    #maximal_difference(minimals, minimals_a, approximate_min_tracker.epsilon)
+
+    return comparisons_exact, comparisons_approximate, max_num_candidates_e, max_num_candidates_a
 
 
 def evaluate(m: int, sample_sizes: List[int], slack, epsilon):
     comparisons_exact_list = []
     comparisons_approx_list = []
-    max_differences_list = []
+    max_candidates_exact_list = []
+    max_candidates_approx_list = []
 
     for size in sample_sizes:
         comparisons_exact_list_n = []
         comparisons_approx_list_n = []
+        max_candidates_exact_list_n = []
+        max_candidates_approx_list_n = []
         max_differences_list_n = []
         for i in range(m):
             mintracker_exact = ExactMinTracker(slack)
             mintracker_approximate = ApproximateMinTracker(slack, epsilon)
             data_set = create_random_points(size)
-            comparisons_exact, comparisons_approximate, max_diff = comparison(data_set, mintracker_exact,
+            comparisons_exact, comparisons_approximate, max_candidates_e, max_candidates_a = comparison(data_set, mintracker_exact,
                                                                               mintracker_approximate)
             comparisons_exact_list_n.append(comparisons_exact)
             comparisons_approx_list_n.append(comparisons_approximate)
-            max_differences_list_n.append(max_diff)
+            max_candidates_exact_list_n.append(max_candidates_e)
+            max_candidates_approx_list_n.append(max_candidates_a)
 
         comparisons_exact_list.append(comparisons_exact_list_n)
         comparisons_approx_list.append(comparisons_approx_list_n)
-        max_differences_list.append(max_differences_list_n)
+        max_candidates_exact_list.append(max_candidates_exact_list_n)
+        max_candidates_approx_list.append(max_candidates_approx_list_n)
 
-    return comparisons_exact_list, comparisons_approx_list, max_differences_list
+        print(f'Evaluation done for sample size: {size}')
+
+    return comparisons_exact_list, comparisons_approx_list, max_candidates_exact_list, max_candidates_approx_list
 
 
 def average_best_worst(list: List[List[float]]):
@@ -202,15 +203,14 @@ def plot_error(list_errors: List[List[float]], number_of_samples: List[int]):
 
 def main():
     # set up data and slack vector
-    slack = [0.2, 0.2, 0.2]  # slack variable to set by decision maker
-    epsilon = [0.1, 0.1, 0.1]
+    slack = [0.1, 0.1, 0.1]  # slack variable to set by decision maker
+    epsilon = [0.05, 0.05, 0.05]
 
-    number_of_executions = 10  # number of experiments
-    number_of_samples = [1000, 2000, 4000]  # number of samples
+    number_of_executions = 10000  # number of experiments
+    number_of_samples = [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 12000, 15000]  # number of samples
 
-    l1, l2, l3 = evaluate(number_of_executions, number_of_samples, slack, epsilon)
+    l1, l2, l3, l4 = evaluate(number_of_executions, number_of_samples, slack, epsilon)
     plot_num_comp(l1, l2, number_of_samples)
-    plot_error(l3, number_of_samples)
 
 
 if __name__ == "__main__":

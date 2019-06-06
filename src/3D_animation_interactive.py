@@ -4,6 +4,7 @@ import matplotlib.animation
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import axes3d
 
 
 def getDataFromCSV():

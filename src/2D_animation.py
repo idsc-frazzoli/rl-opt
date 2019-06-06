@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from PIL import Image
 from matplotlib.lines import Line2D
 
 from optimization.mintracker import ExactMinTracker, ApproximateMinTracker
@@ -53,25 +54,25 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
 
     ax.set_xlabel(f'Objective 1 ($\sigma = {slack[0]}$)')
     ax.set_ylabel(f'Objective 2 ($\sigma = {slack[0]}$)')
-    legend_elements = [Line2D([0], [0], marker='o', color='w', label='Minimal Elements',
-                              markerfacecolor='b', markersize=10),
+    legend_elements = [Line2D([0], [0], marker='o', color='w', label='Optimal Elements',
+                              markerfacecolor='r', markersize=10),
                        Line2D([0], [0], marker='o', color='w', label='Candidate Elements',
-                              markerfacecolor='g', markersize=10),
+                              markerfacecolor='b', markersize=10),
                        Line2D([0], [0], marker='o', color='w', label='Discarded Elements',
-                              markerfacecolor='y', markersize=10)]
+                              markerfacecolor='grey', markersize=10)]
 
-    plt.title('Lexicographic Survivor Set', pad=10)
+    plt.title('Elimination by Objective', pad=10)
 
     ax.legend(handles=legend_elements, bbox_to_anchor=(0., -0.3, 1., .102), loc=10,
               ncol=3, borderaxespad=0.)
 
     if non_minimal_candidate_set.size != 0:
-        plt.scatter(non_minimal_candidate_set[:, 0], non_minimal_candidate_set[:, 1], marker=".", color='g', zorder=10,
+        plt.scatter(non_minimal_candidate_set[:, 0], non_minimal_candidate_set[:, 1], marker=".", color='b', zorder=10,
                     label='Candidate Elements')
     if discarded_set is not None:
-        plt.scatter(discarded_set[:, 0], discarded_set[:, 1], marker=".", color='y', zorder=4,
+        plt.scatter(discarded_set[:, 0], discarded_set[:, 1], marker=".", color='grey', zorder=4,
                     label='Discarded Elements')
-    ax.scatter(minimal_set[:, 0], minimal_set[:, 1], marker=".", color='b', zorder=20, label='Minimal Elements')
+    ax.scatter(minimal_set[:, 0], minimal_set[:, 1], marker=".", color='r', zorder=20, label='Minimal Elements')
 
     for j in range(len(lower_bound) - 1):
         diff = lower_bound[j + 1, 0] - lower_bound[j, 0]
@@ -94,6 +95,10 @@ def make_plots(discarded_set, non_minimal_candidate_set, minimal_set, lower_boun
     # plt.show()
     plt.close()
 
+    im = Image.open(file_path)
+
+    return im
+
 
 def main():
     # set up data and slack vector
@@ -105,6 +110,9 @@ def main():
 
     mintracker_exact = ExactMinTracker(slack)
     mintracker_approximate = ApproximateMinTracker(slack, epsilon)
+
+    images_e = []
+    images_a = []
 
     for i in np.arange(len(dataset)):
         x = np.reshape(dataset[i, :], (1, 2))
@@ -118,10 +126,30 @@ def main():
         lower_bound = get_lower_bound(mintracker_exact.candidates)
         lower_bound_a = get_lower_bound(mintracker_exact.candidates)
 
-        make_plots(mintracker_exact.discarded, non_minimal_candidates, minimals,
-                   lower_bound, slack, i, 'exact')
-        make_plots(mintracker_approximate.discarded, non_minimal_candidates_a, minimals_a,
-                   lower_bound_a, slack, i, 'approximate')
+        im_e = make_plots(mintracker_exact.discarded, non_minimal_candidates, minimals,
+                          lower_bound, slack, i, 'exact')
+        im_a = make_plots(mintracker_approximate.discarded, non_minimal_candidates_a, minimals_a,
+                          lower_bound_a, slack, i, 'approximate')
+
+        images_a.append(im_a)
+        images_e.append(im_e)
+
+    dir_path_e = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plots', '2Dplots', 'exact')
+    dir_path_a = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'plots', '2Dplots', 'approximate')
+
+    file_name = 'animation.gif'
+
+    images_e[0].save(os.path.join(dir_path_e, file_name),
+                     save_all=True,
+                     append_images=images_e[1:],
+                     duration=400,
+                     loop=0)
+
+    images_a[0].save(os.path.join(dir_path_a, file_name),
+                     save_all=True,
+                     append_images=images_a[1:],
+                     duration=400,
+                     loop=0)
 
 
 if __name__ == "__main__":
