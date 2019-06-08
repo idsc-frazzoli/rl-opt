@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from optimization.bottom_cycles import lex_semiorder_comparison, adjacency_matrix, adj_matrix_strict, warshall, \
-    minimal_cycles
+    minimal_cycles, trans_closure
 from optimization.bottom_cycles import ebo
 
 
@@ -54,19 +54,28 @@ class MinTrackerTest(unittest.TestCase):
         a_strict = adj_matrix_strict(a)
         print(a_strict)
 
-    def test_warshall(self):
+    def test_warshall_mult_method(self):
         sigma = [0.1, 0.2, 0.3]
         x = [1, 3, 3]
         y = [1.1, 2, 3]
         z = [1.2, 1, 3]
         data_set = np.vstack((x, y, z))
         a = adjacency_matrix(data_set, sigma)
-        print(a)
         a_strict = adj_matrix_strict(a)
         trans_clos = warshall(a_strict)
-        print(a_strict)
-        # print(trans_clos)
+        trans_clos2 = trans_closure(a_strict)
         self.assertTrue(trans_clos.all())
+        self.assertTrue(np.array_equal(trans_clos, trans_clos2))
+        x = [1, 3, 3]
+        y = [1.1, 2, 3]
+        z = [1.2, 1, 3]
+        w = [1.3, 0, 3]
+        q = [1.1, 4, 3]
+        data_set = np.vstack((x, y, z, w, q))
+        a = adjacency_matrix(data_set, sigma)
+        a_strict = adj_matrix_strict(a)
+        self.assertTrue(np.array_equal(warshall(a_strict), trans_closure(a_strict)))
+
 
     def test_minimals(self):
         sigma = [0.1, 0.2, 0.3]
