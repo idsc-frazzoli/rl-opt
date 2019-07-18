@@ -21,13 +21,36 @@ the points which have to be retained and the discarded points.
 <tr>
 <td>
 
-![ anim](https://user-images.githubusercontent.com/44157083/55796422-48a24b00-5aca-11e9-81e2-5db846f78eb7.gif)
+![animation](https://user-images.githubusercontent.com/44157083/61469058-d40b6200-a97e-11e9-8e5b-d353fab65fc6.gif)
 
 2D Survivor Set
 
 <td>
 
-![anim](https://user-images.githubusercontent.com/44157083/55797288-5789fd00-5acc-11e9-97ce-4abbcb898079.gif)
+![animation](https://user-images.githubusercontent.com/44157083/61469173-04eb9700-a97f-11e9-8db0-36e11d2c8704.gif)
+
+3D Survivor Set
+
+</tr>
+</table>
+
+<table>
+<tr>
+<td>
+
+[heatmapbest.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407188/heatmapbest.pdf)
+
+Heat best case
+
+<td>
+
+[Master_Thesis_Andre.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407176/Master_Thesis_Andre.pdf)
+
+3D Survivor Set
+
+<td>
+
+[heatmapworst.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407194/heatmapworst.pdf)
 
 3D Survivor Set
 
