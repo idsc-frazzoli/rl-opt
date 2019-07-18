@@ -34,28 +34,12 @@ the points which have to be retained and the discarded points.
 </tr>
 </table>
 
-<table>
-<tr>
-<td>
 
-[heatmapbest.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407188/heatmapbest.pdf)
+![heatmapbest](https://user-images.githubusercontent.com/44157083/61469936-6829f900-a980-11e9-8a82-015dd854d089.png)
 
 Heat best case
 
-<td>
 
-[Master_Thesis_Andre.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407176/Master_Thesis_Andre.pdf)
-
-3D Survivor Set
-
-<td>
-
-[heatmapworst.pdf](https://github.com/idsc-frazzoli/rl-opt/files/3407194/heatmapworst.pdf)
-
-3D Survivor Set
-
-</tr>
-</table>
 
 ### Creating the gifs
 
