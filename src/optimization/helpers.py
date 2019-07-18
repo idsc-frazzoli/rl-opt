@@ -1,136 +1,50 @@
+import os
+
 import numpy as np
+import pandas as pd
 
 
-def find_equals(approximate: np.ndarray, exact: np.ndarray):
+def set_subtraction(set_a: np.ndarray, set_b: np.ndarray):
     """
 
-    :param approximate:
-    :param exact:
-    :return:
+    :param set_a: superset
+    :param set_b: subset
+    :return: set_a - set_b
     """
-    count = 0
-    print('Equal entries for approximate and exact algorithm:')
-    for i in range(len(approximate)):
-        current = approximate[i, :]
-        for j in range(len(exact)):
-            to_compare = exact[j, :]
-            if all(current == to_compare):
-                count += 1
-                print(current)
-    print(f'Total number of equal entries: {count}')
+    if set_b is None:
+        return set_a
 
-
-def not_contained_in_exact(approximate: np.ndarray, exact: np.ndarray):
-    """
-
-    :param approximate:
-    :param exact:
-    :return:
-    """
-    count = 0
-    # print('Entries found in approximate but not in exact algorithm:')
-    index_filter = np.zeros(len(approximate), dtype=bool)
-    for i in range(len(approximate)):
-        current = approximate[i, :]
+    index_filter = np.zeros(len(set_a), dtype=bool)
+    for i in range(len(set_a)):
+        current = set_a[i, :]
         any_equals = False
-        for j in range(len(exact)):
-            to_compare = exact[j, :]
-            if all(current == to_compare):
-                any_equals = True
+        for j in range(len(set_b)):
+            to_compare = set_b[j, :]
 
-        if not any_equals:
-            index_filter[i] = True
-            count += 1
-
-    different_entries = approximate[index_filter, :]
-    # print(f'Total number of entries found in approximate that are different to exact entries: {count}')
-    return different_entries
-
-
-def no_differences(approximate: np.ndarray, exact: np.ndarray):
-    for i in range(len(approximate)):
-        current = approximate[i, :]
-        any_equals = False
-        for j in range(len(exact)):
-            to_compare = exact[j, :]
-            if all(current == to_compare):
-                any_equals = True
-
-        if not any_equals:
-            return False
-
-    return True
-
-
-def maximal_difference(exact, approximate, epsilon):
-    """
-
-    :param approximate: approximate minimal set
-    :param exact: exact minimal set
-    :return: maximal difference of any element in exact compared to approximate set
-    """
-
-    different_entries = not_contained_in_approximate(approximate, exact)
-
-    for i in range(len(different_entries)):
-        current = different_entries[i, :]
-
-        for j in range(len(approximate)):
-            to_compare = exact[j, :]
-            differences = np.subtract(current, to_compare)
-            max_difference = np.abs(np.max(differences))
-
-            for j in epsilon:
-                if max_difference > epsilon[i]:
-                    print(f'Maximal difference between points is {max_difference}')
-
-
-def not_contained_in_approximate(approximate: np.ndarray, exact: np.ndarray):
-    """
-
-    :param approximate: approximate set
-    :param exact:
-    :return:
-    """
-    count = 0
-    print('Entries found in exact but not in approximate algorithm:')
-    index_filter = np.zeros(len(exact), dtype=bool)
-    for i in range(len(exact)):
-        current = exact[i, :]
-        any_equals = False
-        for j in range(len(approximate)):
-            to_compare = approximate[j, :]
-            if all(current == to_compare):
-                any_equals = True
-
-        if not any_equals:
-            index_filter[i] = True
-            count += 1
-
-    different_entries = exact[index_filter, :]
-    print(f'Total number of entries found in exact that are different to approximate entries: {count}')
-    return different_entries
-
-
-def not_contained_in(set_a: np.ndarray, set_b: np.ndarray):
-    """
-
-    :param set_a: subset
-    :param set_b: superset
-    :return:
-    """
-    index_filter = np.zeros(len(set_b), dtype=bool)
-    for i in range(len(set_b)):
-        current = set_b[i, :]
-        any_equals = False
-        for j in range(len(set_a)):
-            to_compare = set_a[j, :]
             if all(current == to_compare):
                 any_equals = True
 
         if not any_equals:
             index_filter[i] = True
 
-    different_entries = set_b[index_filter, :]
+    different_entries = set_a[index_filter, :]
 
     return different_entries
+
+
+def create_random_points(dim: int, num: int):
+    """
+    Generates num random data points between 0 and 1
+    """
+    data_values = np.random.rand(num, dim)
+    return data_values
+
+
+def get_data_from_csv(file_name: str):
+    """
+    Retrieve Data from csv file and return dataframe
+    :return: np.array of data values
+    """
+    file_name = os.path.join('resources', file_name)
+    df = pd.read_csv(file_name)
+    return df.values

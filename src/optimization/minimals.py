@@ -123,31 +123,46 @@ def minimal_cycles(data_set: np.ndarray, sigma: List[float]):
     return minimals
 
 
-def ebo(data_set: np.ndarray, sigma: List[float]):
+def minimal_diamond(data_set: np.ndarray, sigma: List[float]):
     """
-    Selects one point from a set X most suitable according to the lexicographic semiorder structure.
-
+    Computes the minimal elements, if they exist, for the lexicographic semiorder on a set X.
     :param data_set: input set X
     :param sigma: threshold parameters
-    :return: one single point
+    :return: minimal set
     """
-    decision = data_set.copy()
-    dim = len(sigma)
+    n = len(data_set)
 
-    # Survivor set method on X
-    for i in range(dim):
-        if len(decision) == 1:
-            return decision[0, :]
-        min_value = np.amin(decision[:, i])
-        sort = decision[:, i] <= min_value + sigma[i]
-        decision = decision[sort, :]
+    a_matrix = adjacency_matrix(data_set, sigma)
+    index_filter = np.ones(n, dtype=bool)
 
-    # lexicographic selection on survivor set 
-    for i in range(dim):
-        if len(decision) == 1:
-            return decision[0, :]
-        min_value = np.amin(decision[:, i])
-        sort = decision[:, i] > min_value
-        decision = decision[np.invert(sort), :]
+    for i in range(n):
+        if not a_matrix[i, :].all():
+            index_filter[i] = False
 
-    return decision[0, :]
+    minimals = data_set[index_filter, :]
+    return minimals
+
+
+def minimal_small(data_set: np.ndarray, sigma: List[float]):
+    """
+    Computes the least element, if it exists, for the lexicographic semiorder on a set X.
+    :param data_set: input set X
+    :param sigma: threshold parameters
+    :return: minimal set
+    """
+    n = len(data_set)
+
+    a_matrix = adjacency_matrix(data_set, sigma)
+    i = np.identity(n, dtype=bool)
+
+    a_matrix_strict = np.logical_or(adj_matrix_strict(a_matrix), i)
+
+    index_filter = np.zeros(n, dtype=bool)
+
+    for i in range(n):
+        if a_matrix_strict[i, :].all():
+            index_filter[i] = True
+
+    minimals = data_set[index_filter, :]
+    return minimals
+

@@ -2,9 +2,9 @@ import unittest
 
 import numpy as np
 
-from optimization.bottom_cycles import lex_semiorder_comparison, adjacency_matrix, adj_matrix_strict, warshall, \
+from optimization.minimals import lex_semiorder_comparison, adjacency_matrix, adj_matrix_strict, warshall, \
     minimal_cycles, trans_closure
-from optimization.bottom_cycles import ebo
+from optimization.minimals import ebo
 
 
 class MinTrackerTest(unittest.TestCase):
