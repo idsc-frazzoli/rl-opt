@@ -1,4 +1,6 @@
-# rl-opt
+# rl-opt 
+
+![batch](https://img.shields.io/github/downloads/idsc-frazzoli/rl-opt/total.svg)
 
 Library for relaxed lexicographic optimizaton (lexicographic semiorders) in Python
 
