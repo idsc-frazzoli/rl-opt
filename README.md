@@ -34,10 +34,29 @@ the points which have to be retained and the discarded points.
 </tr>
 </table>
 
+<table>
+<tr>
+<td>
 
-![heatmapbest](https://user-images.githubusercontent.com/44157083/61469936-6829f900-a980-11e9-8a82-015dd854d089.png)
+![heatmapbest-1](https://user-images.githubusercontent.com/44157083/61792470-1c160300-ae1d-11e9-9184-5723a5d534df.png)
 
-Heat best case
+Heat Map Best
+
+<td>
+
+![heatmapaverage-1](https://user-images.githubusercontent.com/44157083/61792299-baee2f80-ae1c-11e9-9d15-47a3e1174cb4.png)
+
+Heat Map Average
+
+<td>
+
+![heatmapworst-1](https://user-images.githubusercontent.com/44157083/61792545-4d8ece80-ae1d-11e9-9a28-ded533f12dbf.png)
+
+Heat Map Worst
+
+</tr>
+</table>
+
 
 
 
